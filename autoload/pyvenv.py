@@ -1,4 +1,6 @@
-import vim, os, sys
+import os
+import sys
+from importlib.util import find_spec
 
 prev_syspath = None
 
@@ -33,6 +35,7 @@ for item in list(sys.path):
 sys.path[:0] = new_sys_path
 """
 
+
 def activate(env):
     global prev_syspath
     prev_syspath = list(sys.path)
@@ -55,3 +58,29 @@ def deactivate():
         prev_syspath = None
     except:
         pass
+
+
+def autoinstall():
+    # Modules to be installed automatically
+    modules = [
+        "pynvim",
+        "jedi",
+    ]
+    to_install = []
+
+    # Check if each module can be imported and remember those who fail
+    # Attention! This does not actually import the modules to avoid problems.
+    for m in modules:
+        spec = find_spec(m)
+        if spec is None:
+            to_install.append(m)
+
+    # Install modules which failed to import
+    if len(to_install) > 0:
+        from subprocess import check_output
+        print("Installing: {:s}".format(", ".join(to_install)))
+        check_output([sys.executable, '-m', 'pip', 'install'] + to_install)
+
+
+if __name__ == '__main__':
+    autoinstall()

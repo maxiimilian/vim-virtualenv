@@ -49,6 +49,7 @@ function! virtualenv#activate(...)
     endif
     if has('python3')
         python3 pyvenv.activate(vim.eval('l:env_dir'))
+        python3 pyvenv.autoinstall()
     endif
 
     let g:virtualenv_name = name
